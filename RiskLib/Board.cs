@@ -6,6 +6,10 @@ using System.Xml;
 
 namespace RiskLib
 {
+    /// <summary>
+    /// An implementation of the board, without any reference to 
+    /// the pieces or players.
+    /// </summary>
     public class RiskBoard 
     {
         XmlDocument xml;

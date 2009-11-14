@@ -19,10 +19,6 @@ namespace Risk
             set { Session["Game"] = value; }
         }
         
-        // Simple controls
-        Label players, state;
-        PlaceHolder placeHolder;
-
         // Dynamically created controls
         Dictionary<string, LinkButton> TerritoryLinks;
         Dictionary<string, Label> PlayerNameLabels;
@@ -30,12 +26,8 @@ namespace Risk
 
 
         protected void Page_Init(object sender, EventArgs e)
-        {
-            players = (Label)UpdatePanel1.FindControl("PlayersLabel");
-            state = (Label)UpdatePanel1.FindControl("StateLabel");
-            placeHolder = (PlaceHolder)UpdatePanel1.FindControl("PlaceHolder1");
-
-            /// Load controls in init so they are available during/after Page_Load
+        {   
+            /// Create the board controls at runtime
             
             CreateBoard();
         }
@@ -53,11 +45,10 @@ namespace Risk
         protected void TerritoryClick(object sender, EventArgs e)
         {
             LinkButton lb = (LinkButton)sender;
-            Game.Fortify(lb.Text);
+            Game.TerritorySelected(lb.Text);
 
             UpdateLabels();
         }
-
 
         #region <UI methods>
 
@@ -83,14 +74,22 @@ namespace Risk
                 TableCell TerritoryNameCell = new TableCell();
                 TableCell PlayerNameCell = new TableCell();
                 TableCell TroopsCell = new TableCell();
+                TableCell NeighborsCell = new TableCell();
                 tr.Cells.Add(ContinentCell);
                 tr.Cells.Add(TerritoryNameCell);
                 tr.Cells.Add(PlayerNameCell);
                 tr.Cells.Add(TroopsCell);
+                tr.Cells.Add(NeighborsCell);
 
                 Label clabel = new Label();
                 clabel.Text = t.Continent.Name;
                 ContinentCell.Controls.Add(clabel);
+
+                Label nlabel = new Label();
+                nlabel.Text = t.AdjacentTerritories.Count.ToString();
+                NeighborsCell.Controls.Add(nlabel);
+
+
 
                 LinkButton lb = new LinkButton();
                 lb.ID = t.Name;
@@ -107,24 +106,25 @@ namespace Risk
                 TroopLabels.Add(t.Name, troopsLabel);
             }
 
-            placeHolder.Controls.Add(T);
+            PlaceHolder1.Controls.Add(T);
         }
 
         private void UpdateLabels()
         {
-            StateLabel.Text = Game.GameState.ToString();
+            StateLabel.Text = Game.State.ToString();
+            TurnStateLabel.Text = Game.TurnState();
             PlayersLabel.Text = Game.PlayersAsList();
 
-            if (Game.TurnInProgress)
-            {
-                foreach (LinkButton lb in TerritoryLinks.Values)
-                {
-                    if (Game.CurrentPlayer.Territories.Where(t => t.boardTerritory.Name == lb.Text).Count() == 0)
-                        lb.Enabled = false;
-                    else
-                        lb.Enabled = true;
-                }
-            }
+            //if (Game.TurnInProgress)
+            //{
+            //    foreach (LinkButton lb in TerritoryLinks.Values)
+            //    {
+            //        if (Game.CurrentPlayer.Territories.Where(t => t.boardTerritory.Name == lb.Text).Count() == 0)
+            //            lb.Enabled = false;
+            //        else
+            //            lb.Enabled = true;
+            //    }
+            //}
 
             // 'Game Board' Labels
 
@@ -169,6 +169,13 @@ namespace Risk
         protected void AssignTerritories(object sender, EventArgs e)
         {
             Game.AssignTerritoriesRandomly(new Random(DateTime.Now.Second));
+
+            UpdateLabels();
+        }
+
+        protected void EndAttack(object sender, EventArgs e)
+        {
+            Game.EndAttack();
 
             UpdateLabels();
         }

@@ -9,16 +9,35 @@ namespace RiskLib
 {
     public class RiskGame 
     {
-        public int[] InitalTroops = new int[] { 0, 0, 40, 35, 30, 25, 20 };
+        public int[] InitalTroops = new int[] { 0, 0, 25, 20, 15, 15, 15 }; // { 0, 0, 40, 35, 30, 25, 20 };
         public Color[] PlayerColors = new Color[] { Color.LightGreen, Color.LightBlue, Color.LightPink };
 
         public RiskBoard Board { get; private set; }
         public List<RiskPlayer> Players { get; private set; }
         public List<BoardTerritory> UnassignedTerritories { get; private set; }
         public List<PlayerTerritory> PlayerTerritories { get; private set; }
+        private int CurrentPlayerIndex;
 
-        public RiskGameState GameState { get; set; }
+        public RiskGameState State;
 
+        public RiskPlayer CurrentPlayer 
+        {
+            get
+            {
+                if (CurrentPlayerIndex == -1) return null;
+                return Players[CurrentPlayerIndex];
+            }
+        }
+
+        public bool TurnInProgress 
+        {
+            get { return (CurrentPlayer != null); }
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="xmlPath"></param>
         public RiskGame( string xmlPath )
         {
             Board = new RiskBoard(xmlPath);
@@ -29,18 +48,12 @@ namespace RiskLib
             Board.Territories.CopyTo(tempArray);
             UnassignedTerritories = tempArray.ToList();
 
-            GameState = new NotStarted(this);
+            CurrentPlayerIndex = -1;
+
+            State = new NotStarted(this);
         }
 
-        public RiskPlayer CurrentPlayer 
-        {
-            get
-            {
-                if (CurrentPlayerIndex == -1) return null;
-                return Players[CurrentPlayerIndex];
-            }
-        }
-        private int CurrentPlayerIndex = -1;
+
         public void SetCurrentPlayerIndex(int i)
         {
             CurrentPlayerIndex = i;
@@ -51,13 +64,43 @@ namespace RiskLib
             CurrentPlayerIndex++;
             if (CurrentPlayerIndex >= Players.Count)
                 CurrentPlayerIndex = 0;
+
+            //State.TurnOver();
         }
 
-        public bool TurnInProgress
+        #region <Calls to State Object>
+
+        public string TurnState()
         {
-            get { return (CurrentPlayer != null); }
+            return State.TurnState();
+        }
+        public void AddPlayer(string name)
+        {
+            State.AddPlayer(name);
+        }
+        public void AssignTerritoriesRandomly(Random r)
+        {
+            State.AssignTerritoriesRandomly(r);
+        }
+        public void GetNewTroops()
+        {
+            State.GetNewTroops();
+        }
+        public void TerritorySelected(string territoryName)
+        {
+            State.TerritorySelected(territoryName);
+        }
+        public void EndAttack()
+        {
+            State.EndAttack();
         }
 
+        #endregion
+
+        /// <summary>
+        ///  Just for debugging
+        /// </summary>
+        /// <returns></returns>
         public string PlayersAsList()
         {
             string str = "";
@@ -73,36 +116,21 @@ namespace RiskLib
             }
             return str;
         }
-    
-
-        // Calls to State Object
-
-        public void AddPlayer(string name)
-        {
-            GameState.AddPlayer(name);
-        }
-
-        public void AssignTerritoriesRandomly(Random r)
-        {
-            GameState.AssignTerritoriesRandomly(r);
-        }
-
-        public void GetNewTroops()
-        {
-            GameState.GetNewTroops();
-        }
-        public void Fortify(string territoryName)
-        {
-            GameState.Reinforce(territoryName);
-        }
     }
+
 
     #region Game States
 
     public abstract class RiskGameState 
     {
         public RiskGame Game { get; set; }
-        
+
+
+        public virtual string TurnState()
+        {
+            return "-";
+        }
+        public virtual void TurnOver() { /* do nothing */ }
 
         // Base class throws errors.
 
@@ -118,7 +146,11 @@ namespace RiskLib
         {
             throw new InvalidOperationException();
         }
-        public virtual void Reinforce(string territoryName)
+        public virtual void TerritorySelected(string territoryName)
+        {
+            throw new InvalidOperationException();
+        }
+        public virtual void EndAttack()
         {
             throw new InvalidOperationException();
         }
@@ -132,10 +164,10 @@ namespace RiskLib
         {
             Color c = Game.PlayerColors[Game.Players.Count];
 
-            Game.Players.Add(new RiskPlayer(name, Game.Board, c));
+            Game.Players.Add(new RiskPlayer(name, Game, c));
 
             if (Game.Players.Count > 1)
-                Game.GameState = new HasEnoughPlayers(this);
+                Game.State = new HasEnoughPlayers(this);
         }
     }
 
@@ -159,17 +191,17 @@ namespace RiskLib
             /// Select a player to go first, then change state
             Game.SetCurrentPlayerIndex(r.Next(Game.Players.Count));
 
-            Game.GameState = new FirstReinforcementRound(this);
+            Game.State = new FirstReinforcementRound(this);
         }
 
         public override void AddPlayer(string name)
         {
             Color c = Game.PlayerColors[Game.Players.Count];
 
-            Game.Players.Add(new RiskPlayer(name, Game.Board, c));
+            Game.Players.Add(new RiskPlayer(name, Game, c));
 
             if (Game.Players.Count > 1)
-                Game.GameState = new HasEnoughPlayers(this);
+                Game.State = new HasEnoughPlayers(this);
         }
     }
 
@@ -177,28 +209,23 @@ namespace RiskLib
     {
         public FirstReinforcementRound(RiskGameState state) { Game = state.Game; }
 
-        /* public override void GetNewTroops() 
+        public override void TerritorySelected(string territoryName)
         {
-            if (G.CurrentPlayer.TotalTroops < G.InitalTroops[G.Players.Count])
-                G.CurrentPlayer.GiveTroops(1);
-        }*/
-
-        public override void Reinforce(string territoryName) 
-        {
-            /// During first fortify, turn is over after placing one troop
+            /// in this case, selecting the territory adds one reinforcement
 
             Game.CurrentPlayer.Reinforce(territoryName);
             Game.TurnOver();
 
+            /// Check for state change:
             /// if all players have placed all of their troops, move into normal mode
-
+            
             foreach (RiskPlayer p in Game.Players)
             {
                 if (p.TotalTroops < Game.InitalTroops[Game.Players.Count])
                     return;
             }
 
-            Game.GameState = new NormalTurnsGameState(this);
+            Game.State = new NormalTurnsGameState(this);
         }
     }
 
@@ -206,28 +233,33 @@ namespace RiskLib
     {
         public NormalTurn Turn { get; private set; }
 
-        public NormalTurnsGameState(RiskGameState state) 
-        { 
+        public NormalTurnsGameState(RiskGameState state)
+        {
             Game = state.Game;
-            Turn = new NormalTurn(Game);        /// Start the game!
+            Turn = new NormalTurn(Game);        /// Start a normal turn
         }
 
-        public override void GetNewTroops() 
+
+        public override string TurnState()
         {
-            /// in this state, the player gets troops based on the following rules:
-            /// - 1 troop per three territories
-            /// - bonus troops for continents held
-            /// - 3 troop minimum per turn
-            /// (territory cards ignored for now)
+            return Turn.State.ToString();
+        }
 
-            int TerrTroops = Game.CurrentPlayer.Territories.Count / 3;
-            int ContinentTroops = Game.CurrentPlayer.ContinentTroops;
-            int TotalTroops = TerrTroops + ContinentTroops;
+        public override void TerritorySelected(string territoryName)
+        {
+            Turn.State.TerritorySelected(territoryName);
+        }
 
-            if (TotalTroops < 3) 
-                Game.CurrentPlayer.GiveTroops(TotalTroops);
-            else 
-                Game.CurrentPlayer.GiveTroops(3);
+        public override void EndAttack()
+        {
+            Turn.State.EndAttack();
+        }
+        public override void TurnOver()
+        {
+            /// Start a new turn
+
+            Game.TurnOver();
+            Turn = new NormalTurn(Game);
         }
     }
 
