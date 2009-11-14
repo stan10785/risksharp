@@ -11,7 +11,7 @@
       <AdjacentTerritory name="Alaska" />
       <AdjacentTerritory name="Ontario" />
       <AdjacentTerritory name="Northwest Territory" />
-      <AdjacentTerritory name="Quebec" />
+      <AdjacentTerritory name="Western United States" />
     </Territory>
     <Territory name="Central America">
       <AdjacentTerritory name="Venezuela" />
@@ -54,54 +54,201 @@
       <AdjacentTerritory name="Central America" />
       <AdjacentTerritory name="Alberta" />
       <AdjacentTerritory name="Ontario" />
-      <AdjacentTerritory name="Quebec" />
     </Territory>
   </Continent>
   <Continent name="South America" pointValue="2">
-    <Territory name="Argentina" />
-    <Territory name="Brazil" />
-    <Territory name="Peru" />
-    <Territory name="Venezuela" />
+    <Territory name="Argentina">
+      <AdjacentTerritory name="Brazil" />
+      <AdjacentTerritory name="Peru" />
+    </Territory>
+    <Territory name="Brazil">
+      <AdjacentTerritory name="North Africa" />
+      <AdjacentTerritory name="Peru" />
+      <AdjacentTerritory name="Venezuela" />
+      <AdjacentTerritory name="Argentina" />
+    </Territory>
+    <Territory name="Peru">
+      <AdjacentTerritory name="Brazil" />
+      <AdjacentTerritory name="Venezuela" />
+      <AdjacentTerritory name="Argentina" />
+    </Territory>
+    <Territory name="Venezuela">
+      <AdjacentTerritory name="Central America" />
+      <AdjacentTerritory name="Peru" />
+      <AdjacentTerritory name="Brazil" />
+    </Territory>
   </Continent>
   <Continent name="Africa" pointValue="3">
-    <Territory name="Congo" />
-    <Territory name="East Africa" />
-    <Territory name="Egypt" />
-    <Territory name="Madagascar" />
-    <Territory name="North Africa" />
-    <Territory name="South Africa" />
+    <Territory name="Congo">
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="North Africa" />
+      <AdjacentTerritory name="South Africa" />
+    </Territory>
+    <Territory name="East Africa">
+      <AdjacentTerritory name="Congo" />
+      <AdjacentTerritory name="Egypt" />
+      <AdjacentTerritory name="Madagascar" />
+      <AdjacentTerritory name="South Africa" />
+      <AdjacentTerritory name="Middle East" />
+      <AdjacentTerritory name="North Africa" />
+    </Territory>
+    <Territory name="Egypt">
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="North Africa" />
+      <AdjacentTerritory name="Southern Europe" />
+      <AdjacentTerritory name="Middle East" />
+    </Territory>
+    <Territory name="Madagascar">
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="South Africa" />
+    </Territory>
+    <Territory name="North Africa">
+      <AdjacentTerritory name="Congo" />
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="Egypt" />
+      <AdjacentTerritory name="Brazil" />
+      <AdjacentTerritory name="Western Europe" />
+    </Territory>
+    <Territory name="South Africa">
+      <AdjacentTerritory name="Congo" />
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="Madagascar" />
+    </Territory>
   </Continent>
   <Continent name="Europe" pointValue="5">
-    <Territory name="British Isles" />
-    <Territory name="Iceland" />
-    <Territory name="Northern Europe" />
-    <Territory name="Scandinavia" />
-    <Territory name="Southern Europe" />
-    <Territory name="Ukraine" />
-    <Territory name="Western Europe" />
+    <Territory name="British Isles">
+      <AdjacentTerritory name="Iceland" />
+      <AdjacentTerritory name="Northern Europe" />
+      <AdjacentTerritory name="Scandinavia" />
+      <AdjacentTerritory name="Western Europe" />
+    </Territory>
+    <Territory name="Iceland">
+      <AdjacentTerritory name="Greenland" />
+      <AdjacentTerritory name="British Isles" />
+      <AdjacentTerritory name="Scandinavia" />
+    </Territory>
+    <Territory name="Northern Europe">
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="Western Europe" />
+      <AdjacentTerritory name="Scandinavia" />
+      <AdjacentTerritory name="Southern Europe" />
+      <AdjacentTerritory name="British Isles" />
+    </Territory>
+    <Territory name="Scandinavia">
+      <AdjacentTerritory name="Iceland" />
+      <AdjacentTerritory name="Northern Europe" />
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="British Isles" />
+    </Territory>
+    <Territory name="Southern Europe">
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="Western Europe" />
+      <AdjacentTerritory name="Northern Europe" />
+      <AdjacentTerritory name="Egypt" />
+      <AdjacentTerritory name="Middle East" />
+    </Territory>
+    <Territory name="Ukraine">
+      <AdjacentTerritory name="Southern Europe" />
+      <AdjacentTerritory name="Northern Europe" />
+      <AdjacentTerritory name="Scandinavia" />
+      <AdjacentTerritory name="Middle East" />
+      <AdjacentTerritory name="Afghanistan" />
+      <AdjacentTerritory name="Ural" />
+    </Territory>
+    <Territory name="Western Europe">
+      <AdjacentTerritory name="North Africa" />
+      <AdjacentTerritory name="Southern Europe" />
+      <AdjacentTerritory name="Northern Europe" />
+      <AdjacentTerritory name="British Isles" />
+    </Territory>
   </Continent>
   <Continent name="Asia" pointValue="7">
-    <Territory name="Afghanistan" />
-    <Territory name="China" />
-    <Territory name="India" />
-    <Territory name="Irkutsk" />
-    <Territory name="Japan" />
-    <Territory name="Kamchatka" />
-    <Territory name="Middle East" />
-    <Territory name="Mongolia" />
-    <Territory name="Siam" />
-    <Territory name="Siberia" />
-    <Territory name="Ural" />
-    <Territory name="Yakutsk" />
+    <Territory name="Afghanistan">
+      <AdjacentTerritory name="Middle East" />
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="Ural" />
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="India" />
+    </Territory>
+    <Territory name="China">
+      <AdjacentTerritory name="Siam" />
+      <AdjacentTerritory name="Mongolia" />
+      <AdjacentTerritory name="India" />
+      <AdjacentTerritory name="Afghanistan" />
+      <AdjacentTerritory name="Ural" />
+      <AdjacentTerritory name="Siberia" />
+    </Territory>
+    <Territory name="India">
+      <AdjacentTerritory name="Middle East" />
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="Siam" />
+      <AdjacentTerritory name="Afghanistan" />
+    </Territory>
+    <Territory name="Irkutsk">
+      <AdjacentTerritory name="Siberia" />
+      <AdjacentTerritory name="Mongolia" />
+      <AdjacentTerritory name="Kamchatka" />
+      <AdjacentTerritory name="Yakutsk" />
+    </Territory>
+    <Territory name="Japan">
+      <AdjacentTerritory name="Mongolia" />
+      <AdjacentTerritory name="Kamchatka" />
+    </Territory>
+    <Territory name="Kamchatka">
+      <AdjacentTerritory name="Alaska" />
+      <AdjacentTerritory name="Mongolia" />
+      <AdjacentTerritory name="Irkutsk" />
+      <AdjacentTerritory name="Yakutsk" />
+      <AdjacentTerritory name="Japan" />
+    </Territory>
+    <Territory name="Middle East">
+      <AdjacentTerritory name="East Africa" />
+      <AdjacentTerritory name="Southern Europe" />
+      <AdjacentTerritory name="Egypt" />
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="Afghanistan" />
+      <AdjacentTerritory name="India" />
+    </Territory>
+    <Territory name="Mongolia">
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="Siberia" />
+      <AdjacentTerritory name="Irkutsk" />
+      <AdjacentTerritory name="Japan" />
+      <AdjacentTerritory name="Kamchatka" />
+    </Territory>
+    <Territory name="Siam">
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="India" />
+      <AdjacentTerritory name="Indonesia" />
+    </Territory>
+    <Territory name="Siberia">
+      <AdjacentTerritory name="Ural" />
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="Mongolia" />
+      <AdjacentTerritory name="Yakutsk" />
+      <AdjacentTerritory name="Irkutsk" />
+    </Territory>
+    <Territory name="Ural">
+      <AdjacentTerritory name="China" />
+      <AdjacentTerritory name="Ukraine" />
+      <AdjacentTerritory name="Afghanistan" />
+      <AdjacentTerritory name="Siberia" />
+    </Territory>
+    <Territory name="Yakutsk">
+      <AdjacentTerritory name="Kamchatka" />
+      <AdjacentTerritory name="Irkutsk" />
+      <AdjacentTerritory name="Siberia" />
+    </Territory>
   </Continent>
   <Continent name="Oceana" pointValue="2">
     <Territory name="Eastern Australia">
       <AdjacentTerritory name="Western Australia" />
-      <AdjacentTerritory name="Indonesia" />
+      <AdjacentTerritory name="New Guinea" />
     </Territory>
     <Territory name="Indonesia">
       <AdjacentTerritory name="Siam" />
       <AdjacentTerritory name="New Guinea" />
+      <AdjacentTerritory name="Western Australia" />
     </Territory>
     <Territory name="New Guinea">
       <AdjacentTerritory name="Western Australia" />
