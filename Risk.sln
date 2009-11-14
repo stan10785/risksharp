@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk", "Risk\Risk.csproj", "{CA1299D8-87F8-4044-8E87-AC255D9132EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskLib", "RiskLib\RiskLib.csproj", "{F3CE94D8-321A-403C-B054-4A731AEE343E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA1299D8-87F8-4044-8E87-AC255D9132EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA1299D8-87F8-4044-8E87-AC255D9132EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA1299D8-87F8-4044-8E87-AC255D9132EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA1299D8-87F8-4044-8E87-AC255D9132EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3CE94D8-321A-403C-B054-4A731AEE343E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3CE94D8-321A-403C-B054-4A731AEE343E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3CE94D8-321A-403C-B054-4A731AEE343E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3CE94D8-321A-403C-B054-4A731AEE343E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

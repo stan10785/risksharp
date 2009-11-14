@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Risk>
+  <Continent name="North America" pointValue="5">
+    <Territory name="Alaska">
+      <AdjacentTerritory name="Kamchatka" />
+      <AdjacentTerritory name="Alberta" />
+      <AdjacentTerritory name="Northwest Territory" />
+    </Territory>
+    <Territory name="Alberta">
+      <AdjacentTerritory name="Alaska" />
+      <AdjacentTerritory name="Ontario" />
+      <AdjacentTerritory name="Northwest Territory" />
+      <AdjacentTerritory name="Quebec" />
+    </Territory>
+    <Territory name="Central America">
+      <AdjacentTerritory name="Venezuela" />
+      <AdjacentTerritory name="Western United States" />
+      <AdjacentTerritory name="Eastern United States" />
+    </Territory>
+    <Territory name="Eastern United States">
+      <AdjacentTerritory name="Western United States" />
+      <AdjacentTerritory name="Ontario" />
+      <AdjacentTerritory name="Quebec" />
+      <AdjacentTerritory name="Central America" />
+    </Territory>
+    <Territory name="Greenland">
+      <AdjacentTerritory name="Iceland" />
+      <AdjacentTerritory name="Ontario" />
+      <AdjacentTerritory name="Quebec" />
+      <AdjacentTerritory name="Northwest Territory" />
+    </Territory>
+    <Territory name="Northwest Territory">
+      <AdjacentTerritory name="Alaska" />
+      <AdjacentTerritory name="Ontario" />
+      <AdjacentTerritory name="Alberta" />
+      <AdjacentTerritory name="Greenland" />
+    </Territory>
+    <Territory name="Ontario">
+      <AdjacentTerritory name="Alberta" />
+      <AdjacentTerritory name="Quebec" />
+      <AdjacentTerritory name="Northwest Territory" />
+      <AdjacentTerritory name="Western United States" />
+      <AdjacentTerritory name="Eastern United States" />
+      <AdjacentTerritory name="Greenland" />
+    </Territory>
+    <Territory name="Quebec">
+      <AdjacentTerritory name="Eastern United States" />
+      <AdjacentTerritory name="Greenland" />
+      <AdjacentTerritory name="Ontario" />
+    </Territory>
+    <Territory name="Western United States">
+      <AdjacentTerritory name="Eastern United States" />
+      <AdjacentTerritory name="Central America" />
+      <AdjacentTerritory name="Alberta" />
+      <AdjacentTerritory name="Ontario" />
+      <AdjacentTerritory name="Quebec" />
+    </Territory>
+  </Continent>
+  <Continent name="South America" pointValue="2">
+    <Territory name="Argentina" />
+    <Territory name="Brazil" />
+    <Territory name="Peru" />
+    <Territory name="Venezuela" />
+  </Continent>
+  <Continent name="Africa" pointValue="3">
+    <Territory name="Congo" />
+    <Territory name="East Africa" />
+    <Territory name="Egypt" />
+    <Territory name="Madagascar" />
+    <Territory name="North Africa" />
+    <Territory name="South Africa" />
+  </Continent>
+  <Continent name="Europe" pointValue="5">
+    <Territory name="British Isles" />
+    <Territory name="Iceland" />
+    <Territory name="Northern Europe" />
+    <Territory name="Scandinavia" />
+    <Territory name="Southern Europe" />
+    <Territory name="Ukraine" />
+    <Territory name="Western Europe" />
+  </Continent>
+  <Continent name="Asia" pointValue="7">
+    <Territory name="Afghanistan" />
+    <Territory name="China" />
+    <Territory name="India" />
+    <Territory name="Irkutsk" />
+    <Territory name="Japan" />
+    <Territory name="Kamchatka" />
+    <Territory name="Middle East" />
+    <Territory name="Mongolia" />
+    <Territory name="Siam" />
+    <Territory name="Siberia" />
+    <Territory name="Ural" />
+    <Territory name="Yakutsk" />
+  </Continent>
+  <Continent name="Oceana" pointValue="2">
+    <Territory name="Eastern Australia">
+      <AdjacentTerritory name="Western Australia" />
+      <AdjacentTerritory name="Indonesia" />
+    </Territory>
+    <Territory name="Indonesia">
+      <AdjacentTerritory name="Siam" />
+      <AdjacentTerritory name="New Guinea" />
+    </Territory>
+    <Territory name="New Guinea">
+      <AdjacentTerritory name="Western Australia" />
+      <AdjacentTerritory name="Indonesia" />
+      <AdjacentTerritory name="Eastern Australia" />
+    </Territory>
+    <Territory name="Western Australia">
+      <AdjacentTerritory name="Eastern Australia" />
+      <AdjacentTerritory name="New Guinea" />
+      <AdjacentTerritory name="Indonesia" />
+    </Territory>
+  </Continent>
+</Risk>
