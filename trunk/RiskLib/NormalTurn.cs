@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RiskLib
 {
-    public class NormalTurn 
+    public class NormalTurn
     {
         public TurnState State;
         public RiskPlayer Player { get; private set; }

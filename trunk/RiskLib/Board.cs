@@ -16,7 +16,7 @@ namespace RiskLib
         public List<BoardContinent> Continents { get; private set; }
         public List<BoardTerritory> Territories { get; private set; }
 
-        public RiskBoard(string xmlPath)
+        public RiskBoard(string xmlPath) 
         {
             xml = new XmlDocument();
             xml.Load(xmlPath);
@@ -25,9 +25,10 @@ namespace RiskLib
             Territories = new List<BoardTerritory>();
             
             LoadContinents();
+            BoardValidate();
         }
 
-        private void LoadContinents()
+        private void LoadContinents() 
         {
             foreach( XmlNode n in xml.SelectNodes("/Risk/Continent") )
             {
@@ -53,6 +54,29 @@ namespace RiskLib
                     {
                         t.AddAdjacentTerritory(Territories.Where(x => x.Name == cn.Attributes["name"].Value).Single());
                     }
+                }
+            }
+        }
+
+        private void BoardValidate()
+        {
+            /// check that no territory list
+
+            /// check that all borders go both ways
+            /// 
+            foreach (BoardTerritory b in Territories)
+            {
+                foreach (BoardTerritory b_Child in b.AdjacentTerritories)
+                {
+                    /// check that no territory lists itself as adjacent!
+                    /// 
+                    if (b_Child == b)
+                        throw new InvalidOperationException();
+
+                    /// check that all borders go both ways
+                    /// 
+                    if(!b_Child.AdjacentTerritories.Contains(b))
+                        throw new InvalidOperationException();
                 }
             }
         }
