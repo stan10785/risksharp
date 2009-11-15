@@ -59,6 +59,7 @@
     <Content Include="img\RiskBoard.png" />
     <Content Include="Risk.xml" />
     <Content Include="LoadBoard.aspx" />
+    <Content Include="RiskMap.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +71,13 @@
       <DependentUpon>LoadBoard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RiskMap.aspx.cs">
+      <DependentUpon>RiskMap.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RiskMap.aspx.designer.cs">
+      <DependentUpon>RiskMap.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RiskLib\RiskLib.csproj">

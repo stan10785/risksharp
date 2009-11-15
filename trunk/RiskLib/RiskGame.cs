@@ -112,7 +112,7 @@ namespace RiskLib
                     + p.TotalTroops.ToString() + " "
                     + p.NewTroops.ToString()
                     + (p == CurrentPlayer ? "###" : "")
-                    + "<br>";
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;";
             }
             return str;
         }
