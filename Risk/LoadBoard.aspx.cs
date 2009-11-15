@@ -45,7 +45,7 @@ namespace Risk
         protected void TerritoryClick(object sender, EventArgs e)
         {
             LinkButton lb = (LinkButton)sender;
-            Game.TerritorySelected(lb.Text);
+            Game.TerritorySelected(lb.CommandArgument);
 
             UpdateLabels();
         }
@@ -67,6 +67,7 @@ namespace Risk
                                             .OrderBy(n => n.Name)
                                             .OrderBy(n => n.Continent.Name))
             {
+                /*
                 TableRow tr = new TableRow();
                 T.Rows.Add(tr);
 
@@ -88,25 +89,29 @@ namespace Risk
                 Label nlabel = new Label();
                 nlabel.Text = t.AdjacentTerritories.Count.ToString();
                 NeighborsCell.Controls.Add(nlabel);
-
+                */
 
 
                 LinkButton lb = new LinkButton();
                 lb.ID = t.Name;
-                lb.Text = t.Name;
-                TerritoryNameCell.Controls.Add(lb);
-
-                Label nameLabel = new Label();
-                PlayerNameCell.Controls.Add(nameLabel);
-                Label troopsLabel = new Label();
-                TroopsCell.Controls.Add(troopsLabel);
+                lb.CommandArgument = t.Name;
+                lb.Text = "0";
+                lb.CssClass = GetCssClass(t.Name);
+                lb.ToolTip = t.Name;
+                
+                //TerritoryNameCell.Controls.Add(lb);
+                //Label nameLabel = new Label();
+                //PlayerNameCell.Controls.Add(nameLabel);
+                //Label troopsLabel = new Label();
+                //TroopsCell.Controls.Add(troopsLabel);
+                //PlayerNameLabels.Add(t.Name, nameLabel);
+                //TroopLabels.Add(t.Name, troopsLabel);
 
                 TerritoryLinks.Add(t.Name, lb);
-                PlayerNameLabels.Add(t.Name, nameLabel);
-                TroopLabels.Add(t.Name, troopsLabel);
+                PlaceHolder2.Controls.Add(lb);
             }
 
-            PlaceHolder1.Controls.Add(T);
+            //PlaceHolder1.Controls.Add(T);
         }
 
         private void UpdateLabels()
@@ -133,19 +138,27 @@ namespace Risk
                 try
                 {
                     PlayerTerritory pt = Game.PlayerTerritories.Where(x => x.boardTerritory.Name == t.Name).Single();
-                    PlayerNameLabels[t.Name].Text = pt.Player.Name;
-                    TroopLabels[t.Name].Text = pt.Troops.ToString();
-                    ((TableRow)PlayerNameLabels[t.Name].Parent.Parent).BackColor = pt.Player.color;
+                    TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name);
+                    //PlayerNameLabels[t.Name].Text = pt.Player.Name;
+                    TerritoryLinks[t.Name].Text = pt.Troops.ToString();
+                    TerritoryLinks[t.Name].ToolTip += " - " + pt.Player.Name;
+                    TerritoryLinks[t.Name].BackColor = pt.Player.color;
                 }
                 catch
                 {
-                    PlayerNameLabels[t.Name].Text = "?";
-                    TroopLabels[t.Name].Text = "0";
-                    ((TableRow)PlayerNameLabels[t.Name].Parent.Parent).BackColor = Color.White;
+                    TerritoryLinks[t.Name].Text = "0";
+                    TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name) + " empty";
+                    //TroopLabels[t.Name].Text = "0";
+                    //((TableRow)PlayerNameLabels[t.Name].Parent.Parent).BackColor = Color.White;
                 }
             }
         }
-        
+
+        private string GetCssClass(string name)
+        {
+            return name.ToLower().Replace(' ', '_');
+        }
+
         #endregion
 
 
