@@ -27,7 +27,8 @@
         .status-panel a
         {
             margin-left: 5px;
-            margin-right: 5px;	
+            margin-right: 5px;
+            color: Blue;	
         }
         .map-outer-panel
         {
@@ -56,7 +57,6 @@
             padding: 2px;
             vertical-align: middle;
         }
-                
         
         .greenland              { top: 71px;  left: 370px;}
         .alaska                 { top: 73px;  left: 67px; }
@@ -106,23 +106,24 @@
         .new_guinea             { top: 375px; left: 920px; }
         .indonesia              { top: 391px; left: 826px; }
         
-        .player1
+        .selectable
         {
-            border: 2px solid yellow;	
-        }
-        .player2
-        {
-            border: 2px solid blue;	
+        	font-size: 3.0em;
+            border: 1px solid Red;	
         }
         
-        .valid:hover
-        {
-            background-color: Green;	
-        }
+        /*
         .empty
         {
-            background-color:Gray;	
+            background-color: Blue;	
         }
+        .selectable
+        {
+            border: 3px solid green;
+            background-color: Black;	
+        }
+        */
+        
     </style>
 </head>
 <body>
@@ -137,7 +138,7 @@
                 
                     <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
                     
-                    <asp:Image ID="Image1" runat="server" ImageUrl="~/img/RiskBoard5.png" 
+                    <asp:Image ID="Image1" runat="server" ImageUrl="~/img/RiskBoard6.png" 
                        Width="1000"/>
                        
                 </asp:Panel>
@@ -149,14 +150,14 @@
                     <asp:Label ID="TurnStateLabel" runat="server" Text="Label" ForeColor="White"></asp:Label>
                     <asp:Label ID="PlayersLabel" runat="server" Text="Label" ForeColor="White"></asp:Label>
                     
-                    <asp:LinkButton ID="LinkButton1" runat="server" OnClick="NewGame">New Game</asp:LinkButton>
+                    <asp:LinkButton ID="NewGameLb" runat="server" OnClick="NewGame">New Game</asp:LinkButton>
                     
-                    <asp:TextBox ID="TextBox1" runat="server">
-                    </asp:TextBox><asp:LinkButton ID="LinkButton2" runat="server" OnClick="AddPlayer">Add Player</asp:LinkButton>
+                    <asp:TextBox ID="AddPlayerTb" runat="server">
+                    </asp:TextBox><asp:LinkButton ID="AddPlayerLb" runat="server" OnClick="AddPlayer">Add Player</asp:LinkButton>
                     
-                    <asp:LinkButton ID="LinkButton3" runat="server" OnClick="AssignTerritories">Randomly Assign Territories</asp:LinkButton>
+                    <asp:LinkButton ID="AssignTerrLb" runat="server" OnClick="AssignTerritories">Randomly Assign Territories</asp:LinkButton>
                     
-                    <asp:LinkButton ID="LinkButton4" runat="server" OnClick="EndAttack">Done Attacking</asp:LinkButton>
+                    <asp:LinkButton ID="EndAttackLb" runat="server" OnClick="EndAttack">Done Attacking</asp:LinkButton>
                 </asp:Panel>
                 
                 <asp:PlaceHolder ID="PlaceHolder1" runat="server" Visible="false"></asp:PlaceHolder>

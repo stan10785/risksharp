@@ -21,8 +21,6 @@ namespace Risk
         
         // Dynamically created controls
         Dictionary<string, LinkButton> TerritoryLinks;
-        Dictionary<string, Label> PlayerNameLabels;
-        Dictionary<string, Label> TroopLabels;
 
 
         protected void Page_Init(object sender, EventArgs e)
@@ -40,6 +38,19 @@ namespace Risk
             {
                 lb.Click += TerritoryClick;
             }
+
+            if (!Page.IsPostBack)
+            {
+                /// Test script
+
+                Game = new RiskGame(Server.MapPath("Risk.xml"));
+                Game.AddPlayer("Joe");
+                Game.AddPlayer("Buddy");
+                Game.AddPlayer("Gus");
+                Game.AssignTerritoriesRandomly(new Random());
+
+                UpdateLabels();
+            }
         }
 
         protected void TerritoryClick(object sender, EventArgs e)
@@ -55,43 +66,13 @@ namespace Risk
         private void CreateBoard()
         {
             TerritoryLinks = new Dictionary<string, LinkButton>();
-            PlayerNameLabels = new Dictionary<string, Label>();
-            TroopLabels = new Dictionary<string, Label>();
 
             RiskBoard EmptyBoard = new RiskBoard(Server.MapPath("Risk.xml"));
-
-            Table T = new Table();
-            //if (Game == null) T.Visible = false;
 
             foreach (BoardTerritory t in EmptyBoard.Territories
                                             .OrderBy(n => n.Name)
                                             .OrderBy(n => n.Continent.Name))
             {
-                /*
-                TableRow tr = new TableRow();
-                T.Rows.Add(tr);
-
-                TableCell ContinentCell = new TableCell();
-                TableCell TerritoryNameCell = new TableCell();
-                TableCell PlayerNameCell = new TableCell();
-                TableCell TroopsCell = new TableCell();
-                TableCell NeighborsCell = new TableCell();
-                tr.Cells.Add(ContinentCell);
-                tr.Cells.Add(TerritoryNameCell);
-                tr.Cells.Add(PlayerNameCell);
-                tr.Cells.Add(TroopsCell);
-                tr.Cells.Add(NeighborsCell);
-
-                Label clabel = new Label();
-                clabel.Text = t.Continent.Name;
-                ContinentCell.Controls.Add(clabel);
-
-                Label nlabel = new Label();
-                nlabel.Text = t.AdjacentTerritories.Count.ToString();
-                NeighborsCell.Controls.Add(nlabel);
-                */
-
-
                 LinkButton lb = new LinkButton();
                 lb.ID = t.Name;
                 lb.CommandArgument = t.Name;
@@ -99,19 +80,9 @@ namespace Risk
                 lb.CssClass = GetCssClass(t.Name);
                 lb.ToolTip = t.Name;
                 
-                //TerritoryNameCell.Controls.Add(lb);
-                //Label nameLabel = new Label();
-                //PlayerNameCell.Controls.Add(nameLabel);
-                //Label troopsLabel = new Label();
-                //TroopsCell.Controls.Add(troopsLabel);
-                //PlayerNameLabels.Add(t.Name, nameLabel);
-                //TroopLabels.Add(t.Name, troopsLabel);
-
                 TerritoryLinks.Add(t.Name, lb);
                 PlaceHolder2.Controls.Add(lb);
             }
-
-            //PlaceHolder1.Controls.Add(T);
         }
 
         private void UpdateLabels()
@@ -120,16 +91,28 @@ namespace Risk
             TurnStateLabel.Text = Game.TurnState();
             PlayersLabel.Text = Game.PlayersAsList();
 
-            //if (Game.TurnInProgress)
-            //{
-            //    foreach (LinkButton lb in TerritoryLinks.Values)
-            //    {
-            //        if (Game.CurrentPlayer.Territories.Where(t => t.boardTerritory.Name == lb.Text).Count() == 0)
-            //            lb.Enabled = false;
-            //        else
-            //            lb.Enabled = true;
-            //    }
-            //}
+            AddPlayerLb.Visible = Game.CanAddPlayer();
+            AddPlayerTb.Visible = Game.CanAddPlayer();
+            AssignTerrLb.Visible = Game.CanRandomlyAssignTerritories();
+            EndAttackLb.Visible = Game.CanDoneAttacking();
+
+            if (Game.TurnInProgress)
+            {
+                List<string> Selectable = Game.GetSelectable();
+
+                foreach (LinkButton lb in TerritoryLinks.Values)
+                {
+                    if (Selectable.Contains(lb.CommandArgument))
+                    {
+                        lb.BorderColor = Color.White;
+                        lb.BorderWidth = 3;
+                    }
+                    else
+                    {
+                        lb.BorderWidth = 0;
+                    }
+                }
+            }
 
             // 'Game Board' Labels
 
@@ -138,16 +121,16 @@ namespace Risk
                 try
                 {
                     PlayerTerritory pt = Game.PlayerTerritories.Where(x => x.boardTerritory.Name == t.Name).Single();
-                    TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name);
+                    //TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name);
                     //PlayerNameLabels[t.Name].Text = pt.Player.Name;
                     TerritoryLinks[t.Name].Text = pt.Troops.ToString();
-                    TerritoryLinks[t.Name].ToolTip += " - " + pt.Player.Name;
+                    TerritoryLinks[t.Name].ToolTip = pt.boardTerritory.Name + " - " + pt.Player.Name;
                     TerritoryLinks[t.Name].BackColor = pt.Player.color;
                 }
                 catch
                 {
                     TerritoryLinks[t.Name].Text = "0";
-                    TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name) + " empty";
+                    //TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name) + " empty";
                     //TroopLabels[t.Name].Text = "0";
                     //((TableRow)PlayerNameLabels[t.Name].Parent.Parent).BackColor = Color.White;
                 }

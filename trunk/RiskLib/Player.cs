@@ -55,7 +55,7 @@ namespace RiskLib
                 List<PlayerTerritory> lst = new List<PlayerTerritory>();
 
                 /// In order to be a fortify source, a territory must have 2 or more
-                /// troops and border a territory owned by a neighbor
+                /// troops and border a territory owned by a the same player
 
                 if (Troops < 2) return lst;
 
@@ -109,7 +109,7 @@ namespace RiskLib
             List<PlayerTerritory> lst = new List<PlayerTerritory>();
             excludeList.Add(pt);
 
-            foreach (BoardTerritory bt in boardTerritory.AdjacentTerritories)
+            foreach (BoardTerritory bt in pt.boardTerritory.AdjacentTerritories)
             {
                 // Search all adjacentTerritories for ones that the same player owns.
                 // Exclude ones we've already found
@@ -131,7 +131,7 @@ namespace RiskLib
     public class RiskPlayer 
     {
         public string Name { get; private set; }
-        public List<PlayerTerritory> Territories { get; private set; }
+        //public List<PlayerTerritory> Territories { get; private set; }
         public int NewTroops { get; private set; }
         //public RiskBoard Board;
         public RiskGame Game { get; private set; }
@@ -142,15 +142,23 @@ namespace RiskLib
             Name = name;
             Game = g;
             color = c;
-            Territories = new List<PlayerTerritory>();
+            //Territories = new List<PlayerTerritory>();
         }
 
-        public PlayerTerritory AssignTerritory( BoardTerritory territory )
+        public List<PlayerTerritory> Territories
         {
-            PlayerTerritory t = new PlayerTerritory(territory, this, 1);
-            Territories.Add(t);
-            return t;
+            get
+            {
+                return Game.PlayerTerritories.Where(pt => pt.Player == this).ToList();
+            }
         }
+
+        //public PlayerTerritory AssignTerritory( BoardTerritory territory )
+        //{
+        //    PlayerTerritory t = new PlayerTerritory(territory, this, 1);
+        //    Territories.Add(t);
+        //    return t;
+        //}
 
         public void GiveTroops(int i) { NewTroops += i; }
         public void NewTroopPlaced() { NewTroops--; }

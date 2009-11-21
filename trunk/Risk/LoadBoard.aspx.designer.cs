@@ -113,49 +113,49 @@ namespace Risk {
         protected global::System.Web.UI.WebControls.Label PlayersLabel;
         
         /// <summary>
-        /// LinkButton1 control.
+        /// NewGameLb control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton1;
+        protected global::System.Web.UI.WebControls.LinkButton NewGameLb;
         
         /// <summary>
-        /// TextBox1 control.
+        /// AddPlayerTb control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
+        protected global::System.Web.UI.WebControls.TextBox AddPlayerTb;
         
         /// <summary>
-        /// LinkButton2 control.
+        /// AddPlayerLb control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton2;
+        protected global::System.Web.UI.WebControls.LinkButton AddPlayerLb;
         
         /// <summary>
-        /// LinkButton3 control.
+        /// AssignTerrLb control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton3;
+        protected global::System.Web.UI.WebControls.LinkButton AssignTerrLb;
         
         /// <summary>
-        /// LinkButton4 control.
+        /// EndAttackLb control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton4;
+        protected global::System.Web.UI.WebControls.LinkButton EndAttackLb;
         
         /// <summary>
         /// PlaceHolder1 control.
