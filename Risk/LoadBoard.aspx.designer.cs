@@ -158,6 +158,24 @@ namespace Risk {
         protected global::System.Web.UI.WebControls.LinkButton EndAttackLb;
         
         /// <summary>
+        /// TurnInSetLb control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton TurnInSetLb;
+        
+        /// <summary>
+        /// BonusTroopsLa control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BonusTroopsLa;
+        
+        /// <summary>
         /// PlaceHolder1 control.
         /// </summary>
         /// <remarks>

@@ -31,7 +31,7 @@ namespace RiskLib
         public List<RiskCard> Cards { get; private set; }
         public List<RiskCard> DealtCards { get; private set; }
 
-        public RiskDeck(RiskBoard board, Random r)
+        public RiskDeck(RiskBoard board, Random r) 
         {
             rand = r;
             Cards = new List<RiskCard>();
@@ -65,21 +65,14 @@ namespace RiskLib
         }
     }
 
-
-    public class RiskHand
+    public class RiskHand 
     {
         public List<RiskCard> Cards { get; private set; }
 
-        public RiskHand() 
-        {
-            Cards = new List<RiskCard>();
-        }
 
-        public void AddCard(RiskCard c) 
-        {
-            Cards.Add(c);
-        }
+        public RiskHand() { Cards = new List<RiskCard>(); }
 
+        public void AddCard(RiskCard c) { Cards.Add(c); }
 
         public int ArtilleryCards 
         {
@@ -113,6 +106,7 @@ namespace RiskLib
             }
         }
 
+
         public bool SetAvailable 
         {
             get
@@ -134,15 +128,217 @@ namespace RiskLib
             }
         }
 
-        public void TurnInSet()
+        private bool TurnInMatchingSet() 
+        {
+            /// three cards of the same type make a set
+            ///
+
+            List<RiskCard> Set = new List<RiskCard>();
+
+            if (ArtilleryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Artillery));
+
+            if (CavalryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Cavalry));
+
+            if (InfantryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Infantry));
+
+            if (Set.Count > 0)
+            {
+                /// turn in set of matching cards
+
+                Set = Set.Truncate(3);
+
+                for (int i = 0; i < 3; i++)
+                    Cards.Remove(Set[i]);
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool TurnInNonMatchingSet() 
+        {
+            List<RiskCard> Set = new List<RiskCard>();
+
+            /// Get set of non-matching cards
+            
+            try
+            {
+                Set.AddRange(new List<RiskCard> {
+                    Cards.Where( c => c.Type == RiskCardType.Artillery ).First(),
+                    Cards.Where( c => c.Type == RiskCardType.Cavalry ).First(),
+                    Cards.Where( c => c.Type == RiskCardType.Infantry ).First()
+                }
+                );
+
+                /// turn in set of non-matching cards
+
+                Set = Set.Truncate(3);
+
+                for (int i = 0; i < 3; i++)
+                    Cards.Remove(Set[i]);
+
+                return true;    
+            }
+            catch 
+            { 
+                return false; 
+            }
+
+        }
+
+        private bool TurnInMatchingSetWild() 
+        {
+            List<RiskCard> Set = new List<RiskCard>();
+
+            /// get a set of two plus a wild card
+
+            if (ArtilleryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Artillery));
+
+            if (Set.Count == 0 && CavalryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Cavalry));
+
+            if (Set.Count == 0 && InfantryCards > 2)
+                Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Infantry));
+
+            if (Set.Count > 0)
+            {
+                try
+                {
+                    Set.Add(Cards.Where(c => c.Type == RiskCardType.Wild).First());
+                }
+                catch 
+                { 
+                    return false; 
+                }
+
+                for (int i = 0; i < 3; i++)
+                    Cards.Remove(Set[i]);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        private bool TurnInNonMatchingSetWild() 
+        {
+            List<RiskCard> Set = new List<RiskCard>();
+
+            /// Get set of non-matching cards
+
+            try {
+                Set.Add( Cards.Where( c => c.Type == RiskCardType.Artillery ).First() );
+            } catch {}
+
+            try {
+                Set.Add( Cards.Where( c => c.Type == RiskCardType.Cavalry ).First() );
+            } catch {}
+
+            try {
+                Set.Add(Cards.Where( c => c.Type == RiskCardType.Infantry ).First() );
+            } catch {}
+               
+            if (Set.Count == 2)
+            {
+                /// turn in set of non-matching cards
+
+                Set.Add(Cards.Where(c => c.Type == RiskCardType.Wild).First());
+
+                for (int i = 0; i < 3; i++)
+                    Cards.Remove(Set[i]);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        private bool TurnInTwoWildSet() 
+        {
+            List<RiskCard> Set = new List<RiskCard>();
+
+            Set.AddRange(Cards.Where(c => c.Type == RiskCardType.Wild));
+
+            /// Get any other card
+
+            Set.Add(Cards.Where(c => c.Type != RiskCardType.Wild).First());
+
+            if (Set.Count == 3)
+            {
+                /// turn in set of non-matching cards
+
+                for (int i = 0; i < 3; i++)
+                    Cards.Remove(Set[i]);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public bool TurnInSet() 
         {
             if (!SetAvailable) throw new InvalidOperationException();
 
             /// This gets a litte tricky. Are all sets created equal?
             /// or are there situations where cards could be turned in differently
             /// for better results. I'm going with this simple formula for now
-            
 
+            /// Easy-Peasy
+            if (Cards.Count == 3)
+            {
+                Cards = new List<RiskCard>();
+                return true;
+            }
+
+            if (TurnInMatchingSet()) return true;
+            if (TurnInNonMatchingSet()) return true;
+            if (TurnInMatchingSetWild()) return true;
+            if (TurnInNonMatchingSetWild()) return true;
+            if (TurnInTwoWildSet()) return true;
+
+            return false;
+        }
+
+        public override string ToString() 
+        {
+            string s = "";
+
+            foreach (RiskCard c in Cards)
+                s += c.Type.ToString().Substring(0, 1);
+
+            return s;
+        }
+    }
+
+
+
+    public static partial class Extensions 
+    {
+        public static List<T> Truncate<T>(this List<T> lst, int newLength)
+        {
+            List<T> l = new List<T>();
+
+            for (int i = 0; i < newLength; i++)
+            {
+                l.Add(lst[i]);
+            }
+
+            return l;
         }
     }
 }
