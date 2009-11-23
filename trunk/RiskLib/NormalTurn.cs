@@ -8,43 +8,57 @@ namespace RiskLib
     public class NormalTurn 
     {
         public NormalTurnState State;
-        
         public RiskGame Game { get; private set; }
+        public bool DidConquer { get; protected set; }
+        
 
-        public NormalTurn(RiskGame g)
+        // Constructor
+        
+        public NormalTurn(RiskGame g) 
         {
             Game = g;
-            //Player = Game.CurrentPlayer;
             Player.NewTroopsReset();
             State = new ReinforceState(this);
+            DidConquer = false;
         }
 
-        public RiskPlayer Player { get { return Game.CurrentPlayer; } }
 
-        public List<string> GetSelectable()
+        // UI Controllers
+
+        public List<string> GetSelectable() 
         {
             return State.GetSelectable();
         }
 
-        public void TerritorySelected(string territoryName)
-        {
-            State.TerritorySelected(territoryName);
-        }
+
+        // Game Logic
+
+        public RiskPlayer Player { get { return Game.CurrentPlayer; } }
+
+        public void TerritorySelected(string territoryName) { State.TerritorySelected(territoryName); }
+
+        public void TerritoryConquered() { DidConquer = true; }
     }
+
+
+
+    // NormalTurn States
+
+
 
     public abstract class NormalTurnState 
     {
         public NormalTurn Turn { get; protected set; }
-
-
         
 
-        public virtual List<string> GetSelectable()
+        // UI Controllers
+
+        public virtual List<string> GetSelectable() 
         {
             return new List<string>();
         }
 
-        protected bool CanAttack()
+        protected bool CanAttack() 
         {
             /// Check if any attacks are possible
 
@@ -52,7 +66,7 @@ namespace RiskLib
                 t => t.CanAttack).Count() > 0);
         }
 
-        protected bool CanFortify()
+        protected bool CanFortify() 
         {
             /// Check if any fortifications are possile
 
@@ -60,32 +74,36 @@ namespace RiskLib
                 t => t.CanFortify).Count() > 0);
         }
 
-        /// Base class throws error
+        public virtual bool CanEndAttack() { return false; }
+        
+        public virtual bool CanTurnInCards() { return false; }
+
+
+        // Game Logic
 
         public virtual void TerritorySelected(string territoryName)
         {
             throw new InvalidOperationException();
         }
+        
         public virtual void EndAttack()
         {
             throw new InvalidOperationException();
         }
-        /// Controller properties
-        public virtual bool CanEndAttack() { return false; }
 
         protected void TurnOver()
         {
             // assign card here
+            if (Turn.DidConquer) Turn.Player.AddCard(Turn.Game.Deck.Deal());
 
-            Turn.Game.TurnOver();
-            //Turn.Player = Turn.Game.CurrentPlayer;
-            Turn.State = new ReinforceState(this);
+            Turn.Game.State.TurnOver();
+            //Turn.State = new ReinforceState(this);
         }
     }
 
-    public class ReinforceState 
-        : NormalTurnState 
+    public class ReinforceState : NormalTurnState 
     {
+        // Constructors
 
         public ReinforceState(NormalTurnState t) : this(t.Turn) { }
         public ReinforceState(NormalTurn t) 
@@ -94,7 +112,8 @@ namespace RiskLib
             Turn.Player.GetNewTroops();
         }
         
-        
+ 
+        // UI Controllers 
 
         public override List<string> GetSelectable() 
         {
@@ -102,6 +121,11 @@ namespace RiskLib
 
             return Turn.Game.CurrentPlayer.Territories.Select(t => t.boardTerritory.Name).ToList();
         }
+
+        public override bool CanTurnInCards() { return Turn.Player.SetAvailable; }
+
+
+        // Game Logic
 
         public override void TerritorySelected(string territoryName) 
         {
@@ -124,25 +148,23 @@ namespace RiskLib
         }
     }
 
-    public class AttackState 
-        : NormalTurnState 
+    public class AttackState : NormalTurnState 
     {
-        /// <summary>
-        /// The logic here gets a little wishy washy. This may need its own state,
-        /// especially when we add the cards and retreat into the mix
-        /// </summary>
+        /* The logic here gets a little wishy washy. This may need its own state,
+           especially when we add the cards and retreat into the mix */
 
         public PlayerTerritory AttackingTerritory { get; private set; }
         public PlayerTerritory DefendingTerritory { get; private set; }
 
-        public override bool CanEndAttack() { return true; }
 
-        public AttackState(NormalTurnState nts) 
-        { 
-            Turn = nts.Turn;
-        }
+        // Constructor
 
-        public override List<string> GetSelectable()
+        public AttackState(NormalTurnState nts) { Turn = nts.Turn; }
+
+
+        // UI Controllers
+
+        public override List<string> GetSelectable() 
         {
             /// perhaps this should have its own state?
 
@@ -162,6 +184,11 @@ namespace RiskLib
                 return AttackingTerritory.AttackableTerritories.Select(t => t.boardTerritory.Name).ToList();
             }
         }
+
+        public override bool CanEndAttack() { return true; }
+
+
+        // Game Logic
 
         public override void TerritorySelected(string territoryName) 
         {
@@ -210,6 +237,8 @@ namespace RiskLib
                 DefendingTerritory.Conquered(AttackingTerritory.Player, TroopsToMove);
                 AttackingTerritory.ReduceForce(TroopsToMove);
 
+                Turn.TerritoryConquered();
+
                 /// Check for Player Defeated
 
                 if (ConqueredPlayer.Territories.Count == 0)
@@ -239,7 +268,7 @@ namespace RiskLib
             }
         }
 
-        public override void EndAttack()
+        public override void EndAttack() 
         {
             /// Go to Fortify mode
             if (!CanFortify())
@@ -253,15 +282,17 @@ namespace RiskLib
         }
     }
 
-    public class FortifyState 
-        : NormalTurnState
+    public class FortifyState : NormalTurnState 
     {
         public PlayerTerritory SourceTerritory { get; private set; }
         public PlayerTerritory TargetTerritory { get; private set; }
 
         public FortifyState(NormalTurnState nts) { Turn = nts.Turn; }
 
-        public override List<string> GetSelectable()
+
+        // UI Controllers
+
+        public override List<string> GetSelectable() 
         {
             /// perhaps this should have its own state?
 
@@ -282,11 +313,14 @@ namespace RiskLib
             }
         }
 
-        public override void TerritorySelected(string territoryName)
+
+        // Game Logic
+
+        public override void TerritorySelected(string territoryName) 
         {
             PlayerTerritory pt = Turn.Game.PlayerTerritories.Where(n => n.boardTerritory.Name == territoryName).Single();
 
-            if (Turn.Player == pt.Player && pt.CanFortify)
+            if (Turn.Player == pt.Player && pt.CanFortify && SourceTerritory == null)
             {
                 /// This is the source territory
                 SourceTerritory = pt;
@@ -304,24 +338,15 @@ namespace RiskLib
             }
         }
 
-        private void ExecuteFortify()
+        private void ExecuteFortify() 
         {
             /// for now, just move one troop
 
             TargetTerritory.Reinforce();
             SourceTerritory.ReduceForce(1);
 
-            Turn.Game.State.TurnOver();
+            TurnOver();
         }
     }
 
-    //public class TurnOver
-    //    : NormalTurnState
-    //{
-    //    public TurnOver(NormalTurnState t)
-    //    {
-    //        Turn = t.Turn;
-            
-    //    }
-    //}
 }

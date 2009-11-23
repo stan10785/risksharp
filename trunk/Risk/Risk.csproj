@@ -60,6 +60,7 @@
     <Content Include="Risk.xml" />
     <Content Include="LoadBoard.aspx" />
     <Content Include="RiskMap.aspx" />
+    <Content Include="style\Stylesheet1.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

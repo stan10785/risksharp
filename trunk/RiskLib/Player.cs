@@ -130,22 +130,24 @@ namespace RiskLib
 
     public class RiskPlayer 
     {
-        public string Name { get; private set; }
-        //public List<PlayerTerritory> Territories { get; private set; }
         public int NewTroops { get; private set; }
-        //public RiskBoard Board;
-        public RiskGame Game { get; private set; }
         public Color color { get; private set; }
+        public string Name { get; private set; }
+       
+        public RiskGame Game { get; private set; }
+        public RiskHand Hand { get; private set; }
 
-        public RiskPlayer(string name, RiskGame g, Color c)
+        /// Costructor
+        /// 
+        public RiskPlayer(string name, RiskGame g, Color c) 
         {
             Name = name;
             Game = g;
             color = c;
-            //Territories = new List<PlayerTerritory>();
+            Hand = new RiskHand();
         }
 
-        public List<PlayerTerritory> Territories
+        public List<PlayerTerritory> Territories 
         {
             get
             {
@@ -153,19 +155,13 @@ namespace RiskLib
             }
         }
 
-        //public PlayerTerritory AssignTerritory( BoardTerritory territory )
-        //{
-        //    PlayerTerritory t = new PlayerTerritory(territory, this, 1);
-        //    Territories.Add(t);
-        //    return t;
-        //}
+        //Troop Logic
+        #region . Troop Operations .
 
         public void GiveTroops(int i) { NewTroops += i; }
         public void NewTroopPlaced() { NewTroops--; }
         public void NewTroopsReset() { NewTroops = 0; }
-
-        
-        public void GetNewTroops()
+        public void GetNewTroops() 
         {
             /// in this state, the player gets troops based on the following rules:
             /// - 1 troop per three territories
@@ -182,8 +178,6 @@ namespace RiskLib
             else
                 Game.CurrentPlayer.GiveTroops(3);
         }
-        
-
         public int TotalTroops 
         {
             /// counts troops on the board
@@ -198,12 +192,10 @@ namespace RiskLib
                 return sum;
             }
         }
-
-        public void Reinforce(string territoryName)
+        public void Reinforce(string territoryName) 
         {
             Territories.Where(t => t.boardTerritory.Name == territoryName).Single().Reinforce();
         }
-
         public int ContinentTroops 
         {
             get
@@ -223,6 +215,17 @@ namespace RiskLib
 
                 return troops;
             }
-        }
+        } 
+
+        #endregion
+
+
+        // Card Logic
+
+        public void AddCard(RiskCard c) { Hand.AddCard(c); }
+
+        public bool SetAvailable { get { return Hand.SetAvailable; } }
+
+        public bool MustTurnInSet { get { return (Hand.Cards.Count > 4); } }
     }
 }

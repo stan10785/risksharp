@@ -13,15 +13,13 @@ namespace Risk
     {
         RiskGame Game 
         {
-            /// Store game in session so it retains its object instance
-
             get { return (RiskGame)Session["Game"]; }
             set { Session["Game"] = value; }
-        }
-        
-        // Dynamically created controls
-        Dictionary<string, LinkButton> TerritoryLinks;
+        } // Store game in session so it retains its object instance
+        Dictionary<string, LinkButton> TerritoryLinks; // Dynamically created controls
 
+
+        // Life Cycle Events
 
         protected void Page_Init(object sender, EventArgs e)
         {   
@@ -53,17 +51,11 @@ namespace Risk
             }
         }
 
-        protected void TerritoryClick(object sender, EventArgs e)
-        {
-            LinkButton lb = (LinkButton)sender;
-            Game.TerritorySelected(lb.CommandArgument);
 
-            UpdateLabels();
-        }
-
+        // UI Methods
         #region <UI methods>
 
-        private void CreateBoard()
+        private void CreateBoard() 
         {
             TerritoryLinks = new Dictionary<string, LinkButton>();
 
@@ -85,18 +77,20 @@ namespace Risk
             }
         }
 
-        private void UpdateLabels()
+        private void UpdateLabels() 
         {
             StateLabel.Text = Game.State.ToString();
-            TurnStateLabel.Text = Game.TurnState();
-            PlayersLabel.Text = Game.PlayersAsList();
+            TurnStateLabel.Text = Game.TurnState;
+            PlayersLabel.Text = Game.GetPlayersAsList();
 
-            AddPlayerLb.Visible = Game.CanAddPlayer();
-            AddPlayerTb.Visible = Game.CanAddPlayer();
-            AssignTerrLb.Visible = Game.CanRandomlyAssignTerritories();
-            EndAttackLb.Visible = Game.CanDoneAttacking();
+            AddPlayerLb.Visible = Game.CanAddPlayer;
+            AddPlayerTb.Visible = Game.CanAddPlayer;
+            AssignTerrLb.Visible = Game.CanRandomlyAssignTerritories;
+            EndAttackLb.Visible = Game.CanEndAttack;
+            TurnInSetLb.Visible = Game.CanTurnInCards;
+            BonusTroopsLa.Text = Game.CurrentBonusTroopLevel.ToString();
 
-            if (Game.TurnInProgress)
+            if (Game.IsTurnInProgress)
             {
                 List<string> Selectable = Game.GetSelectable();
 
@@ -145,6 +139,8 @@ namespace Risk
         #endregion
 
 
+
+        // UI Events
         #region  <game setup, simple calls to the RiskGame object>
 
         protected void NewGame(object sender, EventArgs e)
@@ -169,9 +165,24 @@ namespace Risk
             UpdateLabels();
         }
 
+        protected void TerritoryClick(object sender, EventArgs e)
+        {
+            LinkButton Lb = (LinkButton)sender;
+            Game.TerritorySelected(Lb.CommandArgument);
+
+            UpdateLabels();
+        }
+
         protected void EndAttack(object sender, EventArgs e)
         {
             Game.EndAttack();
+
+            UpdateLabels();
+        }
+
+        protected void TurnInCards(object sender, EventArgs e)
+        {
+            Game.TurnInCards();
 
             UpdateLabels();
         }

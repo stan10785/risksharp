@@ -10,9 +10,12 @@ namespace RiskLib
     public class RiskGame 
     {
         public int[] InitalTroops = new int[] { 0, 0, 25, 20, 15, 15, 15 }; // { 0, 0, 40, 35, 30, 25, 20 };
-        public Color[] PlayerColors = new Color[] { Color.LightGreen, Color.LightBlue, Color.LightPink };
+        public Color[] PlayerColors = new Color[] { Color.LightGreen, Color.LightBlue, Color.LightPink, Color.LightYellow };
+        public int[] BonusTroops = new int[] { 4, 8, 12, 16, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100 };
+
 
         public RiskBoard Board { get; private set; }
+        public RiskDeck Deck { get; private set; }
 
         public List<RiskPlayer> Players { get; private set; }
         public List<RiskPlayer> DefeatedPlayers { get; private set; }
@@ -23,27 +26,14 @@ namespace RiskLib
 
         public RiskGameState State;
 
-        public RiskPlayer CurrentPlayer 
-        {
-            get
-            {
-                if (CurrentPlayerIndex == -1) return null;
-                return Players[CurrentPlayerIndex];
-            }
-        }
 
-        public bool TurnInProgress 
-        {
-            get { return (CurrentPlayer != null); }
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="xmlPath"></param>
+        
+        // Constructor
+        
         public RiskGame( string xmlPath )
         {
             Board = new RiskBoard(xmlPath);
+            Deck = new RiskDeck(Board, new Random(DateTime.Now.Second));
             Players = new List<RiskPlayer>();
             DefeatedPlayers = new List<RiskPlayer>();
             PlayerTerritories = new List<PlayerTerritory>();
@@ -57,31 +47,76 @@ namespace RiskLib
             State = new NotStarted(this);
         }
 
-        public void SetCurrentPlayerIndex(int i)
+
+        // Game Logic
+
+        public RiskPlayer CurrentPlayer 
         {
-            CurrentPlayerIndex = i;
+            get
+            {
+                if (CurrentPlayerIndex == -1) return null;
+                return Players[CurrentPlayerIndex];
+            }
         }
 
-        public void TurnOver()
+        public bool IsTurnInProgress 
+        {
+            get { return (CurrentPlayer != null); }
+        }
+
+        public int CurrentBonusTroopLevel { get { return BonusTroops[0]; } }
+
+
+        public void SetCurrentPlayerIndex(int i) 
+        {
+            CurrentPlayerIndex = i;
+        }    // should be protected somehow
+
+        public void TurnOver() 
         {
             CurrentPlayerIndex++;
             if (CurrentPlayerIndex >= Players.Count)
                 CurrentPlayerIndex = 0;
         }
 
+        public void PlayerDefeated(RiskPlayer p) 
+        {
+            Players.Remove(p);
+            DefeatedPlayers.Add(p);
+
+
+            /// Check for game over:
+
+            if (Players.Count == 1)
+            {
+                State = new GameOver(this.State);
+            }
+        }
+
+        public void AwardBonusTroops() 
+        {
+            CurrentPlayer.GiveTroops(CurrentBonusTroopLevel);
+            BonusTroops = BonusTroops.Skip(1).ToArray();
+        }
+        
+
+
+        // Controller Properties
+
         #region <Calls to State Object>
 
-        /// Controller Properties
-
-        public bool CanAddPlayer() { return State.CanAddPlayer(); }
-        public bool CanRandomlyAssignTerritories() { return State.CanRandomlyAssignTerritories(); }
-        public bool CanDoneAttacking() { return State.CanEndAttack(); }
-
-
-        public string TurnState()
+        public bool CanAddPlayer { get { return State.CanAddPlayer(); } }
+        public bool CanRandomlyAssignTerritories { get { return State.CanRandomlyAssignTerritories(); } }
+        public bool CanEndAttack { get  { return State.CanEndAttack(); }}
+        public bool CanTurnInCards { get  { return State.CanTurnInCards(); }}
+        public string TurnState 
         {
-            return State.TurnState();
+            get
+            {
+                return State.TurnState();
+            }
         }
+
         public void AddPlayer(string name)
         {
             State.AddPlayer(name);
@@ -106,42 +141,35 @@ namespace RiskLib
         {
             State.EndAttack();
         }
+        public void TurnInCards()
+        {
+            State.TurnInCards();
+        }
 
         #endregion
 
-        /// <summary>
-        ///  Just for debugging
-        /// </summary>
-        /// <returns></returns>
-        public string PlayersAsList()
+
+        // Debug
+
+        public string GetPlayersAsList() 
         {
+            /// Just for debugging
+
             string str = "";
 
             foreach (RiskPlayer p in Players)
             {
-                str += p.Name + " "
-                    + p.Territories.Count.ToString() + " "
-                    + p.TotalTroops.ToString() + " "
+                str += p.Name + " Te:"
+                    + p.Territories.Count.ToString() + " Tr:"
+                    + p.TotalTroops.ToString() + " Nt:"
                     + p.NewTroops.ToString()
+                    + " [" + p.Hand.ToString() + "] "
+                    + (p.SetAvailable ? "* " : " ")
                     + (p == CurrentPlayer ? "###" : "")
                     + "&nbsp;&nbsp;&nbsp;&nbsp;";
             }
             return str;
-        }
-
-        public void PlayerDefeated(RiskPlayer p)
-        {
-            Players.Remove(p);
-            DefeatedPlayers.Add(p);
-
-
-            /// Check for game over:
-
-            if (Players.Count == 1)
-            {
-                State = new GameOver(this.State);
-            }
-        }
+        }   
     }
 
 
@@ -150,7 +178,9 @@ namespace RiskLib
     public abstract class RiskGameState 
     {
         public RiskGame Game { get; set; }
+     
 
+        /// Controller properties
 
         public virtual List<string> GetSelectable()
         {
@@ -161,20 +191,21 @@ namespace RiskLib
         {
             return "-";
         }
-        public virtual void TurnOver() { /* do nothing */ }
 
-
-        /// Controller properties
         public virtual bool CanAddPlayer() { return false; }
         public virtual bool CanRandomlyAssignTerritories() { return false; }
         public virtual bool CanEndAttack() { return false; }
+        public virtual bool CanTurnInCards() { return false; }
 
         /// Base class throws errors.
+        
         public virtual void AssignTerritoriesRandomly(Random rand)  { throw new InvalidOperationException(); }
         public virtual void AddPlayer(string name)                  { throw new InvalidOperationException(); }
         public virtual void GetNewTroops()                          { throw new InvalidOperationException(); }
         public virtual void TerritorySelected(string territoryName) { throw new InvalidOperationException(); }
         public virtual void EndAttack()                             { throw new InvalidOperationException(); }
+        public virtual void TurnOver()                              { throw new InvalidOperationException(); }
+        public virtual void TurnInCards()                           { throw new InvalidOperationException(); }
     }
 
     public class NotStarted : RiskGameState 
@@ -268,15 +299,20 @@ namespace RiskLib
     {
         public NormalTurn Turn { get; private set; }
 
-        public NormalTurnsGameState(RiskGameState state)
+        public NormalTurnsGameState(NormalTurnsGameState ts) : this(ts.Game) { }
+
+        public NormalTurnsGameState(RiskGameState t): this(t.Game) { }
+        
+        public NormalTurnsGameState(RiskGame g)
         {
-            Game = state.Game;
+            Game = g;
             Turn = new NormalTurn(Game);        /// Start a normal turn
         }
 
         /// Controller properties
 
         public override bool CanEndAttack() { return Turn.State.CanEndAttack(); }
+        public override bool CanTurnInCards() { return Turn.State.CanTurnInCards(); }
 
         public override List<string> GetSelectable()
         {
@@ -290,6 +326,12 @@ namespace RiskLib
         public override void TerritorySelected(string territoryName)
         {
             Turn.State.TerritorySelected(territoryName);
+        }
+
+        public override void TurnInCards()
+        {
+            if (Game.CurrentPlayer.Hand.TurnInSet())
+                Game.AwardBonusTroops();
         }
 
         public override void EndAttack()
