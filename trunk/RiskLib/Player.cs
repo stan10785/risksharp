@@ -228,4 +228,5 @@ namespace RiskLib
 
         public bool MustTurnInSet { get { return (Hand.Cards.Count > 4); } }
     }
+
 }

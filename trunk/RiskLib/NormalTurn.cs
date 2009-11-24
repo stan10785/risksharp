@@ -91,14 +91,20 @@ namespace RiskLib
             throw new InvalidOperationException();
         }
 
+        public virtual void GetAiMove()
+        {
+            throw new InvalidOperationException();
+        }
+
         protected void TurnOver()
         {
             // assign card here
             if (Turn.DidConquer) Turn.Player.AddCard(Turn.Game.Deck.Deal());
 
             Turn.Game.State.TurnOver();
-            //Turn.State = new ReinforceState(this);
         }
+
+
     }
 
     public class ReinforceState : NormalTurnState 
@@ -141,10 +147,17 @@ namespace RiskLib
             /// Check for state change:
             /// if no new troops left, go to attack state
 
-            if (pt.Player.NewTroops == 0)
+            if (pt.Player.NewTroops <= 0)
             {
                 Turn.State = new AttackState(this);
             }
+        }
+
+        public override void GetAiMove()
+        {
+            string s = ((RiskAiPlayer)Turn.Player).GetReinforceTerritory();
+            Turn.Game.e = new AiMoveEventArgs(Turn.Player.Name + " reinforced " + s);
+            this.TerritorySelected(s);
         }
     }
 
@@ -219,6 +232,8 @@ namespace RiskLib
             {
                 throw new InvalidOperationException();
             }
+
+
         }
 
         private void ExecuteAttack() 
@@ -278,6 +293,26 @@ namespace RiskLib
             else
             {
                 Turn.State = new FortifyState(this);
+            }
+        }
+
+        public override void GetAiMove()
+        {
+            // Get attack decision
+
+            RiskDecision ad = ((RiskAiPlayer)Turn.Player).GetAttackDecision();
+
+            if (ad.End)
+            {
+                Turn.Game.e = new AiMoveEventArgs(Turn.Player.Name + " ended Attack");
+                EndAttack();
+            }
+            else
+            {
+                Turn.Game.e = new AiMoveEventArgs(Turn.Player.Name + " " + ad.Source + " -> " + ad.Target);
+
+                TerritorySelected(ad.Source);
+                TerritorySelected(ad.Target);
             }
         }
     }
@@ -346,6 +381,16 @@ namespace RiskLib
             SourceTerritory.ReduceForce(1);
 
             TurnOver();
+        }
+
+        public override void GetAiMove()
+        {
+            // Get fortify decision
+
+            RiskDecision ad = ((RiskAiPlayer)Turn.Player).GetFortifyDecision();
+            Turn.Game.e = new AiMoveEventArgs(Turn.Player.Name + " Fortify: " + ad.Source + " -> " + ad.Target);
+            TerritorySelected(ad.Source);
+            TerritorySelected(ad.Target);
         }
     }
 

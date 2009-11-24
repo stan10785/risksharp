@@ -68,15 +68,6 @@ namespace Risk {
         protected global::System.Web.UI.WebControls.PlaceHolder PlaceHolder2;
         
         /// <summary>
-        /// Image1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Image Image1;
-        
-        /// <summary>
         /// StatusPanel control.
         /// </summary>
         /// <remarks>
@@ -173,15 +164,24 @@ namespace Risk {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton BonusTroopsLa;
+        protected global::System.Web.UI.WebControls.Label BonusTroopsLa;
         
         /// <summary>
-        /// PlaceHolder1 control.
+        /// EventsPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder PlaceHolder1;
+        protected global::System.Web.UI.WebControls.Panel EventsPanel;
+        
+        /// <summary>
+        /// AiEventLa control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label AiEventLa;
     }
 }

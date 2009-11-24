@@ -17,19 +17,37 @@ namespace Risk
             set { Session["Game"] = value; }
         } // Store game in session so it retains its object instance
         Dictionary<string, LinkButton> TerritoryLinks; // Dynamically created controls
+        DateTime StartTime;
 
+        private void DebugPrint(string s, bool b)
+        {
+            string ss;
+
+            ss = b ? "IN " : "OUT ";
+            ss += s + " ";
+            ss += DateTime.Now.Subtract(StartTime).TotalMilliseconds.ToString() + " ms";
+            StartTime = DateTime.Now;
+
+            AiEventLa.Text = ss + "<br>" + AiEventLa.Text;
+        }
 
         // Life Cycle Events
 
         protected void Page_Init(object sender, EventArgs e)
-        {   
+        {
+            StartTime = DateTime.Now;
+
             /// Create the board controls at runtime
             
             CreateBoard();
+
+            DebugPrint("Page_Init", false);
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e) 
         {
+            DebugPrint("Page_Load", true);
+
             /// Add events to controls created at runtime
             
             foreach (LinkButton lb in TerritoryLinks.Values)
@@ -37,18 +55,48 @@ namespace Risk
                 lb.Click += TerritoryClick;
             }
 
-            if (!Page.IsPostBack)
+            if (Page.IsPostBack)
             {
-                /// Test script
-
-                Game = new RiskGame(Server.MapPath("Risk.xml"));
-                Game.AddPlayer("Joe");
-                Game.AddPlayer("Buddy");
-                Game.AddPlayer("Gus");
-                Game.AssignTerritoriesRandomly(new Random());
-
-                UpdateLabels();
+                Game.AiMoving += BeforeAiMove;
+                Game.AiMoved += AfterAiMove;
             }
+            else
+            {
+                InitializeGame();
+            }
+
+            DebugPrint("Page_Load", false);
+        }
+
+        protected void Page_LoadComplete(object sender, EventArgs e)
+        {
+            AiCheck();
+        }
+
+        private void AiCheck()
+        {
+            if (Game.IsAiTurn)
+            {
+                Game.ExecuteAiTurn();
+            }
+
+            UpdateLabels();
+        }
+
+        private void InitializeGame()
+        {
+            Game = new RiskGame(Server.MapPath("Risk.xml"));
+            Game.AiMoving += BeforeAiMove;
+            Game.AiMoved += AfterAiMove;
+
+            /// Test script
+            Game.AddPlayer("Joe");
+            Game.AddAiPlayer("Buddy");
+            Game.AddAiPlayer("Gus");
+            Game.AssignTerritoriesRandomly(new Random());
+            AiCheck();
+
+            UpdateLabels();
         }
 
 
@@ -79,6 +127,8 @@ namespace Risk
 
         private void UpdateLabels() 
         {
+            DebugPrint("UpdateLabels", true);
+
             StateLabel.Text = Game.State.ToString();
             TurnStateLabel.Text = Game.TurnState;
             PlayersLabel.Text = Game.GetPlayersAsList();
@@ -115,8 +165,6 @@ namespace Risk
                 try
                 {
                     PlayerTerritory pt = Game.PlayerTerritories.Where(x => x.boardTerritory.Name == t.Name).Single();
-                    //TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name);
-                    //PlayerNameLabels[t.Name].Text = pt.Player.Name;
                     TerritoryLinks[t.Name].Text = pt.Troops.ToString();
                     TerritoryLinks[t.Name].ToolTip = pt.boardTerritory.Name + " - " + pt.Player.Name;
                     TerritoryLinks[t.Name].BackColor = pt.Player.color;
@@ -124,11 +172,19 @@ namespace Risk
                 catch
                 {
                     TerritoryLinks[t.Name].Text = "0";
-                    //TerritoryLinks[t.Name].CssClass = GetCssClass(t.Name) + " empty";
-                    //TroopLabels[t.Name].Text = "0";
-                    //((TableRow)PlayerNameLabels[t.Name].Parent.Parent).BackColor = Color.White;
                 }
             }
+
+            DebugPrint("UpdateLabels", false);
+        }
+
+        protected void BeforeAiMove(object sender, EventArgs e)
+        {
+        }
+        protected void AfterAiMove(object sender, AiMoveEventArgs e)
+        {
+            AiEventLa.Text = e.Summary + "<br>" + AiEventLa.Text;
+            AiCheck();
         }
 
         private string GetCssClass(string name)
@@ -146,48 +202,35 @@ namespace Risk
         protected void NewGame(object sender, EventArgs e)
         {
             Game = new RiskGame(Server.MapPath("Risk.xml"));
-
-            UpdateLabels();
         }
 
         protected void AddPlayer(object sender, EventArgs e)
         {
             TextBox t = (TextBox)UpdatePanel1.FindControl("TextBox1");
             Game.AddPlayer(t.Text);
-
-            UpdateLabels();
         }
 
         protected void AssignTerritories(object sender, EventArgs e)
         {
             Game.AssignTerritoriesRandomly(new Random(DateTime.Now.Second));
-
-            UpdateLabels();
         }
 
         protected void TerritoryClick(object sender, EventArgs e)
         {
             LinkButton Lb = (LinkButton)sender;
             Game.TerritorySelected(Lb.CommandArgument);
-
-            UpdateLabels();
         }
 
         protected void EndAttack(object sender, EventArgs e)
         {
             Game.EndAttack();
-
-            UpdateLabels();
         }
 
         protected void TurnInCards(object sender, EventArgs e)
         {
             Game.TurnInCards();
-
-            UpdateLabels();
         }
 
         #endregion
-
     }
 }

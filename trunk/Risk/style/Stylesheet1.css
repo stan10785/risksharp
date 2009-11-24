@@ -31,8 +31,10 @@
 }
 .map-inner-panel
 {
+	background-image: url('../img/RiskBoard6.png');
 	position: relative;
 	width: 1000px;
+	height: 800PX;
 	border: 1px solid orange;
 	border-top: none;
 }

@@ -13,7 +13,6 @@ namespace RiskLib
         public Color[] PlayerColors = new Color[] { Color.LightGreen, Color.LightBlue, Color.LightPink, Color.LightYellow };
         public int[] BonusTroops = new int[] { 4, 8, 12, 16, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100 };
 
-
         public RiskBoard Board { get; private set; }
         public RiskDeck Deck { get; private set; }
 
@@ -26,11 +25,18 @@ namespace RiskLib
 
         public RiskGameState State;
 
+        // AiMoveEvent
+
+        public event AiMoveHandler AiMoving;
+        public event AiMoveHandler AiMoved;
+        public AiMoveEventArgs e = null;
+        public delegate void AiMoveHandler(RiskGame g, AiMoveEventArgs e);
+
 
         
         // Constructor
         
-        public RiskGame( string xmlPath )
+        public RiskGame( string xmlPath ) 
         {
             Board = new RiskBoard(xmlPath);
             Deck = new RiskDeck(Board, new Random(DateTime.Now.Second));
@@ -64,12 +70,18 @@ namespace RiskLib
             get { return (CurrentPlayer != null); }
         }
 
+        public bool IsAiTurn 
+        {
+            get { return (CurrentPlayer is RiskAiPlayer); }
+        }
+
         public int CurrentBonusTroopLevel { get { return BonusTroops[0]; } }
 
 
         public void SetCurrentPlayerIndex(int i) 
         {
             CurrentPlayerIndex = i;
+
         }    // should be protected somehow
 
         public void TurnOver() 
@@ -102,7 +114,6 @@ namespace RiskLib
 
 
         // Controller Properties
-
         #region <Calls to State Object>
 
         public bool CanAddPlayer { get { return State.CanAddPlayer(); } }
@@ -121,6 +132,11 @@ namespace RiskLib
         {
             State.AddPlayer(name);
         }
+        public void AddAiPlayer(string name)
+        {
+            State.AddAiPlayer(name);
+        }
+
         public List<string> GetSelectable()
         {
             return State.GetSelectable();
@@ -169,7 +185,17 @@ namespace RiskLib
                     + "&nbsp;&nbsp;&nbsp;&nbsp;";
             }
             return str;
-        }   
+        }
+
+        public void ExecuteAiTurn()
+        {
+            if (CurrentPlayer is RiskAiPlayer)
+            {
+                State.GetAiMove();
+                AiMoved(this, e);
+            }
+        }
+
     }
 
 
@@ -198,14 +224,16 @@ namespace RiskLib
         public virtual bool CanTurnInCards() { return false; }
 
         /// Base class throws errors.
-        
-        public virtual void AssignTerritoriesRandomly(Random rand)  { throw new InvalidOperationException(); }
-        public virtual void AddPlayer(string name)                  { throw new InvalidOperationException(); }
-        public virtual void GetNewTroops()                          { throw new InvalidOperationException(); }
+
+        public virtual void AssignTerritoriesRandomly(Random rand) { throw new InvalidOperationException(); }
+        public virtual void AddPlayer(string name) { throw new InvalidOperationException(); }
+        public virtual void AddAiPlayer(string name) { throw new InvalidOperationException(); }
+        public virtual void GetNewTroops() { throw new InvalidOperationException(); }
         public virtual void TerritorySelected(string territoryName) { throw new InvalidOperationException(); }
-        public virtual void EndAttack()                             { throw new InvalidOperationException(); }
-        public virtual void TurnOver()                              { throw new InvalidOperationException(); }
-        public virtual void TurnInCards()                           { throw new InvalidOperationException(); }
+        public virtual void EndAttack() { throw new InvalidOperationException(); }
+        public virtual void TurnOver() { throw new InvalidOperationException(); }
+        public virtual void TurnInCards() { throw new InvalidOperationException(); }
+        public virtual void GetAiMove() { throw new InvalidOperationException(); }
     }
 
     public class NotStarted : RiskGameState 
@@ -221,6 +249,20 @@ namespace RiskLib
 
             Game.Players.Add(new RiskPlayer(name, Game, c));
 
+            CheckStateChange();
+        }
+
+        public override void AddAiPlayer(string name)
+        {
+            Color c = Game.PlayerColors[Game.Players.Count];
+
+            Game.Players.Add(new RiskAiPlayer(name, Game, c));
+
+            CheckStateChange();
+        }
+
+        private void CheckStateChange()
+        {
             if (Game.Players.Count > 2)
                 Game.State = new HasEnoughPlayers(this);
         }
@@ -247,10 +289,8 @@ namespace RiskLib
                 }
             }
 
-            /// Select a player to go first, then change state
+            Game.State = new FirstReinforcementRound(this, r);
             Game.SetCurrentPlayerIndex(r.Next(Game.Players.Count));
-
-            Game.State = new FirstReinforcementRound(this);
         }
 
         public override void AddPlayer(string name)
@@ -266,7 +306,10 @@ namespace RiskLib
 
     public class FirstReinforcementRound : RiskGameState 
     {
-        public FirstReinforcementRound(RiskGameState state) { Game = state.Game; }
+        public FirstReinforcementRound(RiskGameState state, Random rand) 
+        {
+            Game = state.Game;
+        }
 
         public override List<string> GetSelectable()
         {
@@ -280,6 +323,7 @@ namespace RiskLib
             /// in this case, selecting the territory adds one reinforcement
 
             Game.CurrentPlayer.Reinforce(territoryName);
+
             Game.TurnOver();
 
             /// Check for state change:
@@ -292,6 +336,14 @@ namespace RiskLib
             }
 
             Game.State = new NormalTurnsGameState(this);
+            
+        }
+
+        public override void GetAiMove()
+        {
+            string s = ((RiskAiPlayer)Game.CurrentPlayer).GetInitialReinforceTerritory();
+            Game.e = new AiMoveEventArgs(Game.CurrentPlayer.Name + " reinforced " + s);
+            this.TerritorySelected(s);
         }
     }
 
@@ -342,8 +394,12 @@ namespace RiskLib
         {
             /// Start a new turn
 
-            Game.TurnOver();
             Turn = new NormalTurn(Game);
+            Game.TurnOver();
+        }
+        public override void GetAiMove() 
+        {
+            Turn.State.GetAiMove();
         }
     }
 
