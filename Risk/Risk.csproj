@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="img\RiskBoard.png" />
+    <Content Include="AI\Random.xml" />
     <Content Include="Risk.xml" />
     <Content Include="LoadBoard.aspx" />
     <Content Include="RiskMap.aspx" />

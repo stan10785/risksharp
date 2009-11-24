@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<RiskAI playerName="Random">
+  <InitialReinforce>
+    <TerritoryWeight weight="1" randomize="true" />
+  </InitialReinforce>
+  <NormalTurn>
+    <Reinforce>
+      <TurnInCard weight="1" randomize="true" />
+      <Territory weight="1" randomize="true" />
+    </Reinforce>
+    <Attack>
+      <AttackTerritory weight="1" randomize="true" />
+      <EndAttack weight="1" randomize="true" />
+    </Attack>
+    <Fortify>
+      <SourceTerritory weight="1" randomize="true" />
+      <TargetTerritory weight="1" randomize="true" />
+    </Fortify>
+  </NormalTurn>
+</RiskAI>
